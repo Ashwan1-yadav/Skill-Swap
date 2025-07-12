@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= title %> | Skill Swap</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .glass {
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+      backdrop-filter: blur(4px);
+    }
+    .accent {
+      background: linear-gradient(90deg, #6366f1 0%, #a21caf 100%);
+      color: #fff;
+    }
+    .accent-text {
+      color: #6366f1;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen flex flex-col">
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-30 bg-white/90 shadow-md glass flex items-center justify-between px-6 py-3">
+    <a href="/home" class="flex items-center gap-2 text-2xl font-bold accent-text tracking-tight">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+      Skill Swap
+    </a>
+    <div class="flex items-center gap-3">
+      <a href="/home" class="text-gray-700 hover:accent px-3 py-1 rounded transition">Home</a>
+      <a href="/login" class="accent px-4 py-1 rounded shadow hover:opacity-90 transition">Login</a>
+      <a href="/signup" class="ml-2 text-indigo-600 font-semibold hover:underline">Sign Up</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex items-center justify-center min-h-[70vh] flex-1">
+    <div class="bg-white glass rounded-2xl shadow-2xl max-w-md w-full p-8">
+      <div class="text-center mb-6">
+        <h2 class="text-3xl font-extrabold accent-text">Skill Swap</h2>
+        <p class="text-gray-600 mt-2">Login to your account</p>
+      </div>
+      <form id="loginForm" class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" id="email" placeholder="you@example.com" class="w-full px-4 py-2 border border-indigo-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input type="password" id="password" placeholder="••••••••" class="w-full px-4 py-2 border border-indigo-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
+        </div>
+        <div class="flex justify-between items-center text-sm text-gray-600">
+          <label class="flex items-center">
+            <input type="checkbox" class="form-checkbox text-indigo-600 mr-2" />
+            Remember me
+          </label>
+          <a href="#" class="text-indigo-500 hover:underline">Forgot password?</a>
+        </div>
+        <button type="submit" class="w-full accent py-2 rounded-lg font-semibold shadow hover:opacity-90 transition">Login</button>
+      </form>
+      <p class="mt-6 text-center text-sm text-gray-600">
+        Don’t have an account?
+        <a href="/signup" class="text-indigo-500 font-medium hover:underline">Sign up</a>
+      </p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 text-sm text-gray-500 border-t bg-white/80 mt-auto">
+    &copy; 2025 Skill Swap Platform. Crafted with <span class="text-pink-500">♥</span> by the Skill Swap Team.
+  </footer>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      console.log('Attempting login with email:', email);
+      
+      try {
+        const response = await fetch('/userModel/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        
+        console.log('Response status:', response.status);
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (response.ok) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          console.log('Login successful, redirecting to home');
+          window.location.href = '/home';
+        } else {
+          alert(data.message || 'Login failed');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('Login failed. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html> 
