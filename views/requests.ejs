@@ -1,0 +1,221 @@
+<div class="py-8">
+  <h1 class="text-4xl font-extrabold text-center accent-text mb-10">Skill Swap Requests</h1>
+  
+  <!-- Tabs -->
+  <div class="flex justify-center mb-8">
+    <div class="bg-white glass rounded-lg p-1 shadow-md">
+      <button onclick="showTab('received')" id="receivedTab" class="px-6 py-2 rounded-md accent transition">
+        Received Requests
+      </button>
+      <button onclick="showTab('sent')" id="sentTab" class="px-6 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition">
+        Sent Requests
+      </button>
+    </div>
+  </div>
+
+  <!-- Received Requests -->
+  <div id="receivedRequests" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Requests will be loaded here -->
+  </div>
+
+  <!-- Sent Requests -->
+  <div id="sentRequests" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Sent requests will be loaded here -->
+  </div>
+</div>
+
+<script>
+let currentTab = 'received';
+
+function showTab(tab) {
+  currentTab = tab;
+  
+  document.getElementById('receivedTab').className = tab === 'received' 
+    ? 'px-6 py-2 rounded-md accent transition'
+    : 'px-6 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition';
+  
+  document.getElementById('sentTab').className = tab === 'sent'
+    ? 'px-6 py-2 rounded-md accent transition'
+    : 'px-6 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition';
+  
+  document.getElementById('receivedRequests').classList.toggle('hidden', tab !== 'received');
+  document.getElementById('sentRequests').classList.toggle('hidden', tab !== 'sent');
+  
+  if (tab === 'received') {
+    loadReceivedRequests();
+  } else {
+    loadSentRequests();
+  }
+}
+
+async function loadReceivedRequests() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  try {
+    const response = await fetch('/swapReq?type=received', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    const requests = await response.json();
+    const container = document.getElementById('receivedRequests');
+    
+    if (requests.length === 0) {
+      container.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-gray-500 text-lg">No received requests.</p></div>';
+      return;
+    }
+    
+    container.innerHTML = requests.map(request => `
+      <div class="bg-white glass rounded-xl shadow-lg p-6 flex flex-col gap-4 hover:scale-105 transition-transform duration-200">
+        <div class="flex items-center gap-4">
+          <img src="${request.fromUser.profilePhoto || 'https://i.pravatar.cc/100?img=5'}" class="w-16 h-16 rounded-full shadow-md border-2 border-indigo-200" alt="Avatar">
+          <div>
+            <h2 class="text-xl font-semibold accent-text">${request.fromUser.name}</h2>
+            <p class="text-gray-600">📍 ${request.fromUser.location}</p>
+          </div>
+        </div>
+        
+        <div class="flex-1">
+          <p class="text-gray-700 mb-3">${request.message}</p>
+          <p class="text-sm text-gray-500">Sent: ${new Date(request.createdAt).toLocaleDateString()}</p>
+        </div>
+        
+        ${request.status === 'pending' ? `
+          <div class="flex gap-2">
+            <button onclick="respondToRequest('${request._id}', 'accepted')" 
+                    class="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
+              Accept
+            </button>
+            <button onclick="respondToRequest('${request._id}', 'rejected')" 
+                    class="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition">
+              Decline
+            </button>
+          </div>
+        ` : `
+          <div class="text-center">
+            <span class="px-3 py-1 rounded-full text-sm font-medium ${
+              request.status === 'accepted' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }">
+              ${request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+            </span>
+          </div>
+        `}
+      </div>
+    `).join('');
+    
+  } catch (error) {
+    console.error('Error loading received requests:', error);
+  }
+}
+
+async function loadSentRequests() {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  try {
+    const response = await fetch('/swapReq?type=sent', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    const requests = await response.json();
+    const container = document.getElementById('sentRequests');
+    
+    if (requests.length === 0) {
+      container.innerHTML = '<div class="col-span-full text-center py-12"><p class="text-gray-500 text-lg">No sent requests.</p></div>';
+      return;
+    }
+    
+    container.innerHTML = requests.map(request => `
+      <div class="bg-white glass rounded-xl shadow-lg p-6 flex flex-col gap-4 hover:scale-105 transition-transform duration-200">
+        <div class="flex items-center gap-4">
+          <img src="${request.toUser.profilePhoto || 'https://i.pravatar.cc/100?img=5'}" class="w-16 h-16 rounded-full shadow-md border-2 border-indigo-200" alt="Avatar">
+          <div>
+            <h2 class="text-xl font-semibold accent-text">${request.toUser.name}</h2>
+            <p class="text-gray-600">📍 ${request.toUser.location}</p>
+          </div>
+        </div>
+        
+        <div class="flex-1">
+          <p class="text-gray-700 mb-3">${request.message}</p>
+          <p class="text-sm text-gray-500">Sent: ${new Date(request.createdAt).toLocaleDateString()}</p>
+        </div>
+        
+        <div class="text-center">
+          <span class="px-3 py-1 rounded-full text-sm font-medium ${
+            request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+            request.status === 'accepted' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }">
+            ${request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+          </span>
+        </div>
+        
+        ${request.status === 'pending' ? `
+          <button onclick="deleteRequest('${request._id}')" 
+                  class="bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition">
+            Cancel Request
+          </button>
+        ` : ''}
+      </div>
+    `).join('');
+    
+  } catch (error) {
+    console.error('Error loading sent requests:', error);
+  }
+}
+
+async function respondToRequest(requestId, status) {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  try {
+    const response = await fetch(`/swapReq/${requestId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
+    });
+
+    if (response.ok) {
+      alert(`Request ${status} successfully!`);
+      loadReceivedRequests();
+    } else {
+      const data = await response.json();
+      alert(data.message || 'Failed to update request');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Failed to update request');
+  }
+}
+
+async function deleteRequest(requestId) {
+  const token = localStorage.getItem('token');
+  if (!token) return;
+
+  if (!confirm('Are you sure you want to cancel this request?')) return;
+
+  try {
+    const response = await fetch(`/swapReq/${requestId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (response.ok) {
+      alert('Request cancelled successfully!');
+      loadSentRequests();
+    } else {
+      const data = await response.json();
+      alert(data.message || 'Failed to cancel request');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Failed to cancel request');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  loadReceivedRequests();
+});
+</script> 

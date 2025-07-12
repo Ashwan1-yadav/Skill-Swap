@@ -1,0 +1,86 @@
+<% layout('layout') %>
+<div class="flex items-center justify-center min-h-[70vh] py-8">
+  <div class="bg-white glass rounded-3xl shadow-2xl p-8 max-w-md w-full">
+    <h2 class="text-3xl font-extrabold accent-text text-center mb-6">Send Skill Swap Request</h2>
+    <form id="requestForm" class="space-y-5">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Recipient</label>
+        <select id="recipient" class="w-full px-4 py-2 mt-1 border border-indigo-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400" required>
+          <option value="">Select a user</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Skill You Offer</label>
+        <input type="text" id="skillOffered" placeholder="e.g. Web Development" class="w-full px-4 py-2 mt-1 border border-indigo-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Skill You Need</label>
+        <input type="text" id="skillNeeded" placeholder="e.g. Graphic Design" class="w-full px-4 py-2 mt-1 border border-indigo-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Message</label>
+        <textarea id="message" rows="3" placeholder="Explain your request and how you'd like to collaborate" class="w-full px-4 py-2 mt-1 border border-indigo-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-400" required></textarea>
+      </div>
+      <button type="submit" class="w-full accent py-2 rounded-xl font-semibold shadow hover:opacity-90 transition">Send Request</button>
+    </form>
+  </div>
+</div>
+<script>
+async function loadUsers() {
+  try {
+    const response = await fetch('/userModel');
+    const users = await response.json();
+    const recipientSelect = document.getElementById('recipient');
+    users.forEach(user => {
+      const option = document.createElement('option');
+      option.value = user._id;
+      option.textContent = `${user.name} (${user.location}) - Offers: ${user.skillsOffered.join(', ')}`;
+      recipientSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error('Error loading users:', error);
+  }
+}
+document.getElementById('requestForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('Please login to send requests');
+    window.location.href = '/login';
+    return;
+  }
+  const formData = {
+    toUser: document.getElementById('recipient').value,
+    message: document.getElementById('message').value,
+    skillOffered: document.getElementById('skillOffered').value,
+    skillNeeded: document.getElementById('skillNeeded').value
+  };
+  if (!formData.toUser) {
+    alert('Please select a recipient');
+    return;
+  }
+  try {
+    const response = await fetch('/swapReq', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(formData)
+    });
+    const data = await response.json();
+    if (response.ok) {
+      alert('Request sent successfully!');
+      window.location.href = '/requests';
+    } else {
+      alert(data.message || 'Failed to send request');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Failed to send request');
+  }
+});
+document.addEventListener('DOMContentLoaded', function() {
+  loadUsers();
+});
+</script> 

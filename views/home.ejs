@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= title %> | Skill Swap</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .glass {
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+      backdrop-filter: blur(4px);
+    }
+    .accent {
+      background: linear-gradient(90deg, #6366f1 0%, #a21caf 100%);
+      color: #fff;
+    }
+    .accent-text {
+      color: #6366f1;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen flex flex-col">
+  <!-- Navbar -->
+  <nav class="sticky top-0 z-30 bg-white/90 shadow-md glass flex items-center justify-between px-6 py-3">
+    <a href="/home" class="flex items-center gap-2 text-2xl font-bold accent-text tracking-tight">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+      Skill Swap
+    </a>
+    <div class="flex items-center gap-3">
+      <a href="/home" class="text-gray-700 hover:accent px-3 py-1 rounded transition">Home</a>
+      <a href="/login" class="accent px-4 py-1 rounded shadow hover:opacity-90 transition">Login</a>
+      <a href="/signup" class="ml-2 text-indigo-600 font-semibold hover:underline">Sign Up</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-1 w-full max-w-7xl mx-auto px-2 sm:px-6 py-8">
+    <!-- Hero Section -->
+    <section class="text-center py-12 bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100 rounded-xl shadow mb-8">
+      <h2 class="text-4xl sm:text-5xl font-extrabold mb-4 accent-text">Swap Skills, Grow Together</h2>
+      <p class="text-gray-600 max-w-xl mx-auto text-lg">Connect with people who have the skills you want and need your expertise. Collaborate, learn, and grow in a trusted community.</p>
+    </section>
+
+    <!-- User Cards -->
+    <section class="px-2 sm:px-0 py-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="usersGrid">
+        <% if (typeof users !== 'undefined' && users.length > 0) { %>
+          <% users.forEach(user => { %>
+            <div class="user-card bg-white glass border border-indigo-100 rounded-2xl shadow-lg p-6 flex flex-col gap-3 hover:scale-105 hover:shadow-2xl transition-transform duration-200">
+              <div class="flex items-center gap-4">
+                <img src="<%= user.profilePhoto || 'https://png.pngtree.com/png-clipart/20250102/original/pngtree-user-avatar-placeholder-black-png-image_6796227.png' %>" class="rounded-full w-16 h-16 border-2 border-indigo-200 shadow" alt="Profile Photo">
+                <div>
+                  <h3 class="font-semibold text-xl accent-text"><%= user.name %></h3>
+                  <p class="text-sm text-gray-500">📍 <%= user.location %></p>
+                </div>
+              </div>
+              <div class="mt-2 text-sm">
+                <p><span class="font-semibold text-indigo-600">Skills Offered:</span> <%= user.skillsOffered.join(', ') %></p>
+                <p><span class="font-semibold text-pink-600">Skills Wanted:</span> <%= user.skillsWanted.join(', ') %></p>
+                <p><span class="font-semibold text-purple-600">Availability:</span> <span data-availability="<%= user.availability %>"><%= user.availability %></span></p>
+              </div>
+              <button onclick="sendRequest('<%= user._id %>', '<%= user.name %>')" class="mt-3 accent w-full py-2 rounded-lg font-semibold shadow hover:opacity-90 transition">Send Request</button>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <div class="col-span-full text-center py-12">
+            <p class="text-gray-500 text-lg">No users available at the moment.</p>
+          </div>
+        <% } %>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 text-sm text-gray-500 border-t bg-white/80 mt-auto">
+    &copy; 2025 Skill Swap Platform. Crafted with <span class="text-pink-500">♥</span> by the Skill Swap Team.
+  </footer>
+
+  <script>
+    async function sendRequest(userId, userName) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please login to send requests');
+        window.location.href = '/login';
+        return;
+      }
+      const message = prompt(`Send a request to ${userName}:\n\nExplain what skill you can offer and what you'd like to learn.`);
+      if (!message) return;
+      try {
+        const response = await fetch('/swapReq', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            toUser: userId,
+            message: message
+          })
+        });
+        const data = await response.json();
+        if (response.ok) {
+          alert('Request sent successfully!');
+        } else {
+          alert(data.message || 'Failed to send request');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to send request');
+      }
+    }
+  </script>
+</body>
+</html> 
