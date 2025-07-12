@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skill Swap - Send Request</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .fade-in-up {
+      animation: fadeInUp 1s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-100 to-indigo-200 min-h-screen flex items-center justify-center px-4">
+  <div class="bg-white shadow-2xl rounded-3xl p-8 max-w-md w-full fade-in-up">
+    <h2 class="text-3xl font-bold text-zinc-900 text-center mb-6 animate-pulse">Send Request</h2>
+    
+    <form class="space-y-5">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Your Name</label>
+        <input type="text" placeholder="Enter your name"
+          class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Skill You Offer</label>
+        <input type="text" placeholder="e.g. Web Development"
+          class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Skill You Need</label>
+        <input type="text" placeholder="e.g. Graphic Design"
+          class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Message</label>
+        <textarea rows="3" placeholder="Explain your request"
+          class="w-full px-4 py-2 mt-1 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-300"></textarea>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full py-2 px-4 bg-zinc-900 text-white rounded-xl hover:transparent transform hover:scale-105 transition duration-300 shadow-lg"
+      >
+        Send Request
+      </button>
+    </form>
+  </div>
+</body>
+</html>

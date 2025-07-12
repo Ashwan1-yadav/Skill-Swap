@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skill Swap Requests</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .fade-in {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 min-h-screen py-10 px-6">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-4xl font-bold text-center text-zinc-900 mb-10 animate-pulse">Skill Swap Request List</h1>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto max-h-[80vh] pr-2">
+      <!-- Repeated Request Card -->
+      <!-- You can use a loop if rendering dynamically -->
+
+      <!-- Example 1 -->
+      <div class="bg-white rounded-xl shadow-md p-5 flex items-center gap-4 transition-transform duration-300 transform hover:scale-105 fade-in">
+        <img src="https://i.pravatar.cc/100?img=5" class="w-16 h-16 rounded-full shadow-md" alt="Avatar">
+        <div>
+          <h2 class="text-xl font-semibold text-zinc-900">Riya Sharma</h2>
+          <p class="text-gray-600">Wants: <span class="text-pink-600 font-medium">Graphic Design</span></p>
+          <p class="text-gray-600">Offers: <span class="text-green-600 font-medium">Public Speaking</span></p>
+        </div>
+      </div>
+
+      <!-- Example 2 -->
+      <div class="bg-white rounded-xl shadow-md p-5 flex items-center gap-4 transition-transform duration-300 transform hover:scale-105 fade-in">
+        <img src="https://i.pravatar.cc/100?img=20" class="w-16 h-16 rounded-full shadow-md" alt="Avatar">
+        <div>
+          <h2 class="text-xl font-semibold text-zinc-900">Arjun Verma</h2>
+          <p class="text-gray-600">Wants: <span class="text-pink-600 font-medium">Photography</span></p>
+          <p class="text-gray-600">Offers: <span class="text-green-600 font-medium">Excel Skills</span></p>
+        </div>
+      </div>
+
+      <!-- Example 3 -->
+      <div class="bg-white rounded-xl shadow-md p-5 flex items-center gap-4 transition-transform duration-300 transform hover:scale-105 fade-in">
+        <img src="https://i.pravatar.cc/100?img=32" class="w-16 h-16 rounded-full shadow-md" alt="Avatar">
+        <div>
+          <h2 class="text-xl font-semibold text-zinc-900">Sneha Rao</h2>
+          <p class="text-gray-600">Wants: <span class="text-pink-600 font-medium">Cooking</span></p>
+          <p class="text-gray-600">Offers: <span class="text-green-600 font-medium">UI/UX Design</span></p>
+        </div>
+      </div>
+
+      <!-- Add 20+ similar cards to make a large list -->
+      <!-- Copy/paste and modify the examples above -->
+
+    </div>
+  </div>
+</body>
+</html>
+
